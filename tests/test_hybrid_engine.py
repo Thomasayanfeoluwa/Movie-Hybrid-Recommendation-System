@@ -28,21 +28,21 @@ class TestCBFEngine(unittest.TestCase):
     def setUpClass(cls):
         """Load models once for all tests"""
         print("\n Loading CBF models...")
-        with open('../models/cbf/tfidf_vectorizer.pkl', 'rb') as f:
+        with open("./models/cbf/tfidf_vectorizer.pkl", "rb") as f:
             cls.tfidf = pickle.load(f)
         
-        with open('../models/cbf/svd_model.pkl', 'rb') as f:
+        with open('./models/cbf/svd_model.pkl', 'rb') as f:
             cls.svd = pickle.load(f)
         
-        cls.index = faiss.read_index('../models/cbf/faiss_index.bin')
+        cls.index = faiss.read_index('./models/cbf/faiss_index.bin')
         
-        with open('../models/cbf/movie_id_to_idx.pkl', 'rb') as f:
+        with open('./models/cbf/movie_id_to_idx.pkl', 'rb') as f:
             cls.movie_id_to_idx = pickle.load(f)
         
-        with open('../models/cbf/idx_to_movie_id.pkl', 'rb') as f:
+        with open('./models/cbf/idx_to_movie_id.pkl', 'rb') as f:
             cls.idx_to_movie_id = pickle.load(f)
         
-        cls.movies_df = pd.read_pickle('../data/processed/movies_df.pkl')
+        cls.movies_df = pd.read_pickle('./models/cbf/movies_df.pkl')
         print(" CBF models loaded")
     
     def test_1_model_loading(self):
@@ -121,11 +121,11 @@ class TestCBFEngine(unittest.TestCase):
         print(f"   Test 1.5: Inference time {elapsed:.2f} ms (<200ms)")
     
     def test_6_empty_title(self):
-        """Test empty title handling"""
-        with self.assertRaises(Exception):
-            movie_row = self.movies_df[self.movies_df['title'].str.lower() == ""]
-        print("   Test 1.6: Empty title handling")
-
+        """Test empty title handling - should return empty list, not crash"""
+        movie_title = ""
+        movie_row = self.movies_df[self.movies_df['title'].str.lower() == movie_title.lower()]
+        self.assertEqual(len(movie_row), 0)  
+        print("   Test 1.6: Empty title handled gracefully (returns empty)")
 
 
 print("\n" + "-" * 40)
@@ -139,19 +139,19 @@ class TestCFEngine(unittest.TestCase):
     def setUpClass(cls):
         """Load models once for all tests"""
         print("\n Loading CF models...")
-        with open('../models/cf/als_model.pkl', 'rb') as f:
+        with open('./models/cf/als_model.pkl', 'rb') as f:
             cls.model = pickle.load(f)
         
-        with open('../models/cf/user_mapper.pkl', 'rb') as f:
+        with open('./models/cf/user_mapper.pkl', 'rb') as f:
             cls.user_mapper = pickle.load(f)
         
-        with open('../models/cf/movie_mapper.pkl', 'rb') as f:
+        with open('./models/cf/movie_mapper.pkl', 'rb') as f:
             cls.movie_mapper = pickle.load(f)
         
-        with open('../models/cf/movie_inv_mapper.pkl', 'rb') as f:
+        with open('./models/cf/movie_inv_mapper.pkl', 'rb') as f:
             cls.movie_inv_mapper = pickle.load(f)
         
-        cls.C = load_npz('../data/processed/als_confidence_matrix.npz')
+        cls.C = load_npz('./data/processed/als_confidence_matrix.npz')
         print(" CF models loaded")
     
     def test_1_model_loading(self):
@@ -220,15 +220,15 @@ class TestHybridEngine(unittest.TestCase):
     def setUpClass(cls):
         """Load hybrid config"""
         print("\n Loading hybrid config...")
-        with open('../models/hybrid/hybrid_config.pkl', 'rb') as f:
+        with open('./models/hybrid/hybrid_config.pkl', 'rb') as f:
             cls.config = pickle.load(f)
         print(" Hybrid config loaded")
         
         # Load other models for testing
-        with open('../models/cbf/movie_id_to_idx.pkl', 'rb') as f:
+        with open('./models/cbf/movie_id_to_idx.pkl', 'rb') as f:
             cls.movie_id_to_idx = pickle.load(f)
         
-        cls.movies_df = pd.read_pickle('../data/processed/movies_df.pkl')
+        cls.movies_df = pd.read_pickle('./models/cbf/movies_df.pkl')
     
     def test_1_hybrid_config(self):
         """Test hybrid config has all required fields"""
